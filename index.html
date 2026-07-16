@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>裤佬音乐网 - 纯前端音乐播放器</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -24,10 +24,27 @@
   <style>
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    html, body { height: 100%; height: 100dvh; margin: 0; padding: 0; overflow: hidden; }
-    body { -webkit-tap-highlight-color: transparent; padding-bottom: env(safe-area-inset-bottom); }
-    @keyframes lyricFadeIn { 0% { opacity: 0; transform: translateY(4px); } 100% { opacity: 1; transform: translateY(0); } }
+    
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    body {
+      -webkit-tap-highlight-color: transparent;
+      padding-bottom: env(safe-area-inset-bottom);
+      min-height: 100vh;
+    }
+
+    @keyframes lyricFadeIn { 
+      0% { opacity: 0; transform: translateY(4px); } 
+      100% { opacity: 1; transform: translateY(0); } 
+    }
     .animate-lyric { animation: lyricFadeIn 0.25s ease-out forwards; }
+    
     * { transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease; }
 
     html.light { background-color: #f1f5f9; }
@@ -69,21 +86,22 @@
     html.light .bg-slate-800.text-slate-300 { color: #334155; }
     html.light .bg-slate-800.text-slate-600 { color: #94a3b8; }
     html.light .hover\:bg-slate-700.text-slate-300:hover { color: #0f172a; }
+    html.light .bg-slate-800\/40 { background-color: rgba(226,232,240,0.4); }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 flex flex-col font-sans select-none antialiased">
+<body class="bg-slate-950 text-slate-100 font-sans select-none antialiased min-h-screen">
 
   <!-- 导航栏 -->
-  <header class="shrink-0 bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80 px-3 py-2 flex items-center justify-between relative z-40">
-    <div class="w-[80px]"></div>
+  <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80 px-3 py-2 flex items-center justify-between">
+    <div class="w-[72px]"></div>
     <div class="flex flex-col items-center">
       <div class="relative">
         <div class="absolute -inset-1 bg-gradient-to-r from-brand-500 to-indigo-500 rounded-full blur-md opacity-70"></div>
-        <img src="https://dogpan.com/f/r0EAi2/touxiang.gif" class="relative w-12 h-12 rounded-full border-2 border-brand-500 object-cover" alt="Avatar">
+        <img src="https://dogpan.com/f/r0EAi2/touxiang.gif" class="relative w-11 h-11 rounded-full border-2 border-brand-500 object-cover" alt="Avatar">
       </div>
-      <h1 class="text-2xl font-black mt-0.5 tracking-wider bg-gradient-to-r from-brand-500 to-purple-400 bg-clip-text text-transparent">裤佬音乐网</h1>
+      <h1 class="text-xl md:text-2xl font-black mt-0.5 tracking-wider bg-gradient-to-r from-brand-500 to-purple-400 bg-clip-text text-transparent">裤佬音乐网</h1>
     </div>
-    <div class="flex items-center space-x-0.5 w-[80px] justify-end">
+    <div class="flex items-center space-x-0.5 w-[72px] justify-end">
       <button id="themeToggle" class="p-2 text-slate-400 hover:text-white rounded-full hover:bg-slate-800 transition cursor-pointer">
         <svg id="themeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path id="sunPath" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -97,49 +115,41 @@
   </header>
 
   <!-- 核心内容 -->
-  <main class="flex-1 min-h-0 flex flex-col md:flex-row p-3 gap-3 overflow-hidden">
-    <div class="flex-1 min-h-0 flex flex-col gap-2">
-      <div class="flex space-x-2 shrink-0">
-        <input id="searchInput" type="text" placeholder="搜歌曲、歌手、专辑..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-brand-500 text-slate-200 transition placeholder:text-slate-500">
-        <button id="searchBtn" class="bg-brand-600 hover:bg-brand-700 active:scale-95 text-white font-medium text-sm px-5 py-2.5 rounded-xl transition shrink-0">搜索</button>
+  <main class="max-w-7xl mx-auto w-full px-3 py-3 flex flex-col gap-3 pb-6">
+
+    <!-- 搜索栏 -->
+    <div class="flex space-x-2 shrink-0">
+      <input id="searchInput" type="text" placeholder="搜歌曲、歌手、专辑..." class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-brand-500 text-slate-200 transition placeholder:text-slate-500">
+      <button id="searchBtn" class="bg-brand-600 hover:bg-brand-700 active:scale-95 text-white font-medium text-sm px-5 py-2.5 rounded-xl transition shrink-0">搜索</button>
+    </div>
+
+    <!-- 歌曲列表 -->
+    <div class="bg-slate-900/50 border border-slate-800/80 rounded-xl flex-1 flex flex-col overflow-hidden">
+      <div class="px-3.5 py-2 border-b border-slate-800/60 flex justify-between items-center shrink-0">
+        <span class="font-bold text-xs text-slate-300">歌曲列表</span>
+        <span id="pageIndicator" class="text-[10px] text-slate-500">第 1 页</span>
       </div>
-      <div class="bg-slate-900/50 border border-slate-800/80 rounded-xl flex-1 min-h-0 flex flex-col overflow-hidden">
-        <div class="px-3.5 py-2 border-b border-slate-800/60 flex justify-between items-center shrink-0">
-          <span class="font-bold text-xs text-slate-300">歌曲列表</span>
-          <span id="pageIndicator" class="text-[10px] text-slate-500">第 1 页</span>
-        </div>
-        <div id="musicList" class="flex-1 overflow-y-auto no-scrollbar divide-y divide-slate-800/30">
-          <div class="text-center text-slate-500 py-12 text-sm">输入歌曲名开始搜索吧 ✨</div>
-        </div>
-        <div id="pagination" class="hidden px-3 py-2 border-t border-slate-800/40 flex justify-between shrink-0">
-          <button id="prevPageBtn" class="text-[11px] px-2.5 py-1 bg-slate-800 rounded-lg hover:bg-slate-700 transition text-slate-300">上一页</button>
-          <button id="nextPageBtn" class="text-[11px] px-2.5 py-1 bg-slate-800 rounded-lg hover:bg-slate-700 transition text-slate-300">下一页</button>
-        </div>
+      <div id="musicList" class="overflow-y-auto no-scrollbar divide-y divide-slate-800/30 max-h-[40vh] md:max-h-[50vh]">
+        <div class="text-center text-slate-500 py-12 text-sm">输入歌曲名开始搜索吧 ✨</div>
+      </div>
+      <div id="pagination" class="hidden px-3 py-2 border-t border-slate-800/40 flex justify-between shrink-0">
+        <button id="prevPageBtn" class="text-[11px] px-2.5 py-1 bg-slate-800 rounded-lg hover:bg-slate-700 transition text-slate-300">上一页</button>
+        <button id="nextPageBtn" class="text-[11px] px-2.5 py-1 bg-slate-800 rounded-lg hover:bg-slate-700 transition text-slate-300">下一页</button>
       </div>
     </div>
 
-    <!-- 歌词面板 -->
-    <div class="hidden md:flex flex-[0.8] min-h-0 flex flex-col bg-slate-900/30 border border-slate-800/50 rounded-xl overflow-hidden">
-      <div class="px-3.5 py-2 border-b border-slate-800/80 flex justify-between items-center bg-slate-900/50 shrink-0">
-        <span class="font-bold text-xs text-slate-300">歌词同步</span>
-        <button id="downloadLrcBtn" class="hidden text-[10px] text-brand-400 hover:text-brand-300 flex items-center space-x-1 bg-brand-500/10 hover:bg-brand-500/20 px-2 py-0.5 rounded transition">
-          <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
-          <span>LRC</span>
-        </button>
-      </div>
-      <div id="lyricsContainer" class="relative flex-1 overflow-y-auto no-scrollbar py-8 px-4 space-y-3 scroll-smooth">
-        <div class="text-center text-slate-500 py-8 text-sm">暂无正在播放的歌词</div>
-      </div>
-    </div>
-  </main>
+    <!-- 播放器 -->
+    <div class="bg-slate-900/95 border border-slate-800/80 rounded-xl p-3 flex flex-col gap-2">
 
-  <!-- 播放器 -->
-  <footer class="shrink-0 bg-slate-900/95 border-t border-slate-800 p-3 z-40">
-    <div class="max-w-7xl mx-auto flex flex-col space-y-2.5">
-      <div id="miniLyricBar" class="w-full text-center py-1.5 text-xs font-semibold text-brand-400 min-h-[28px] flex items-center justify-center bg-slate-950/40 rounded-lg border border-slate-800/30">
+      <!-- 迷你歌词条 -->
+      <div id="miniLyricBar" class="w-full text-center py-1 text-xs font-semibold text-brand-400 min-h-[24px] flex items-center justify-center bg-slate-950/40 rounded-lg border border-slate-800/30">
         <span id="miniLyricText" class="truncate px-4">🎵 裤佬音乐，听我想听</span>
       </div>
-      <div class="flex flex-col md:flex-row items-center justify-between gap-2.5">
+
+      <!-- 播放器主体 -->
+      <div class="flex flex-col md:flex-row items-center justify-between gap-2">
+        
+        <!-- 歌曲信息 -->
         <div class="flex items-center space-x-2.5 w-full md:w-1/3">
           <img id="playerCover" src="" class="w-10 h-10 rounded-lg object-cover bg-brand-600 border border-slate-700 shrink-0">
           <div class="min-w-0 flex-1">
@@ -147,16 +157,24 @@
             <div id="playerArtist" class="text-[10px] text-slate-400 truncate">期待你的选择</div>
           </div>
         </div>
+
+        <!-- 播放控制 -->
         <div class="flex flex-col items-center w-full md:w-2/5 space-y-1">
           <div class="flex items-center space-x-5">
+            <!-- 上一曲：向左箭头 ◀ -->
             <button id="prevBtn" class="text-slate-400 hover:text-white transition active:scale-90">
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M8.445 14.834A1 1 0 0010 14V6a1 1 0 00-1.555-.832l-6 4a1 1 0 000 1.664l6 4zM16.445 14.834A1 1 0 0018 14V6a1 1 0 00-1.555-.832l-6 4a1 1 0 000 1.664l6 4z"/></svg>
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M11.354 5.646a.5.5 0 0 0-.708 0l-7 7a.5.5 0 0 0 0 .708l7 7a.5.5 0 0 0 .708-.708L4.707 13H20a.5.5 0 0 0 0-1H4.707l6.647-6.646a.5.5 0 0 0 0-.708z"/>
+              </svg>
             </button>
-            <button id="playBtn" class="bg-brand-600 hover:bg-brand-700 text-white p-2 rounded-full transition active:scale-95 shadow-lg shadow-brand-500/20">
+            <button id="playBtn" class="bg-brand-600 hover:bg-brand-700 text-white p-2.5 rounded-full transition active:scale-95 shadow-lg shadow-brand-500/20">
               <svg id="playIcon" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/></svg>
             </button>
+            <!-- 下一曲：向右箭头 ▶ -->
             <button id="nextBtn" class="text-slate-400 hover:text-white transition active:scale-90">
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M4.555 14.834A1 1 0 006 14V6a1 1 0 00-1.555-.832l-6 4a1 1 0 000 1.664l6 4zM12.555 14.834A1 1 0 0014 14V6a1 1 0 00-1.555-.832l-6 4a1 1 0 000 1.664l6 4z"/></svg>
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12.646 5.646a.5.5 0 0 1 .708 0l7 7a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708-.708L19.293 13H4a.5.5 0 0 1 0-1h15.293l-6.647-6.646a.5.5 0 0 1 0-.708z"/>
+              </svg>
             </button>
           </div>
           <div class="flex items-center space-x-2 w-full text-[10px] text-slate-400">
@@ -167,11 +185,13 @@
             <span id="durationTime">00:00</span>
           </div>
         </div>
+
+        <!-- 音质切换 + 下载 -->
         <div class="flex items-center justify-between md:justify-end gap-2 w-full md:w-1/3">
           <select id="qualitySelect" class="bg-slate-800 border border-slate-700 text-[11px] text-slate-300 rounded-lg px-1.5 py-1 outline-none focus:border-brand-500">
-            <option value="128k">标准 (128K)</option>
-            <option value="320k">高品质 (320K)</option>
-            <option value="flac">无损 (FLAC)</option>
+            <option value="128k">标准</option>
+            <option value="320k">高品质</option>
+            <option value="flac">无损</option>
           </select>
           <button id="downloadSongBtn" class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-[11px] text-slate-300 border border-slate-700 rounded-lg px-2.5 py-1 flex items-center space-x-1 transition">
             <svg class="w-3 h-3 text-brand-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
@@ -180,7 +200,22 @@
         </div>
       </div>
     </div>
-  </footer>
+
+    <!-- 歌词面板 -->
+    <div class="bg-slate-900/30 border border-slate-800/50 rounded-xl overflow-hidden">
+      <div class="px-3.5 py-2 border-b border-slate-800/80 flex justify-between items-center bg-slate-900/50">
+        <span class="font-bold text-xs text-slate-300">📝 歌词</span>
+        <button id="downloadLrcBtn" class="hidden text-[10px] text-brand-400 hover:text-brand-300 flex items-center space-x-1 bg-brand-500/10 hover:bg-brand-500/20 px-2 py-0.5 rounded transition">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+          <span>LRC</span>
+        </button>
+      </div>
+      <div id="lyricsContainer" class="relative overflow-y-auto no-scrollbar py-4 px-4 space-y-1 scroll-smooth max-h-[300px] md:max-h-[400px]">
+        <div class="text-center text-slate-500 py-4 text-xs">暂无歌词</div>
+      </div>
+    </div>
+
+  </main>
 
   <!-- 设置弹窗 -->
   <div id="settingsModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -191,7 +226,7 @@
       </div>
       <div>
         <label class="block text-xs text-slate-400 mb-1">CORS 代理基础 URL：</label>
-        <input id="proxyInput" type="text" placeholder="https://jsnzkpg4.pages.dev/" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-brand-500">
+        <input id="proxyInput" type="text" placeholder="https://seep.eu.org/" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-brand-500">
       </div>
       <div class="flex justify-end pt-1">
         <button id="saveProxyBtn" class="bg-brand-600 hover:bg-brand-700 text-white text-xs px-3.5 py-1.5 rounded-lg font-medium transition">保存并刷新</button>
@@ -206,7 +241,6 @@
     // 核心功能：歌词、搜索、播放
     // ============================================================
 
-    // ========== 工具函数 ==========
     function decodeHTML(html) {
       if (!html) return '';
       const txt = document.createElement("textarea");
@@ -252,8 +286,9 @@
     }
     const DEFAULT_COVER = getDefaultCover();
 
+    // 默认代理换成 https://seep.eu.org/
     function getProxyUrl(url) {
-      const proxyBase = localStorage.getItem('music_cors_proxy') || 'https://jsnzkpg4.pages.dev/';
+      const proxyBase = localStorage.getItem('music_cors_proxy') || 'https://seep.eu.org/';
       const cleanProxy = proxyBase.endsWith('/') ? proxyBase : proxyBase + '/';
       return `${cleanProxy}${url}`;
     }
@@ -337,7 +372,6 @@
       let res;
       try { res = JSON.parse(text); } catch(e) { res = eval('(' + text + ')'); }
       const songs = res.abslist.map(_ => ({
-        // 存储纯数字 ID（去掉 MUSIC_ 前缀）
         id: _.MUSICRID.replace("MUSIC_", ""),
         artwork: artworkShort2Long(_.web_albumpic_short),
         title: decodeHTML(_.NAME || ""),
@@ -347,9 +381,7 @@
       return { isEnd: (+res.PN + 1) * +res.RN >= +res.TOTAL, data: songs };
     }
 
-    // ========== 【核心修复】歌词获取 - 直接传纯数字 ID ==========
     async function fetchLyrics(songId) {
-      // songId 是纯数字，直接拼接
       const url = `http://m.kuwo.cn/newh5/singles/songinfoandlrc?musicId=${songId}&httpStatus=1`;
       console.log('📡 请求歌词 URL:', url);
       try {
@@ -382,7 +414,6 @@
       }
     }
 
-    // ========== 【核心修复】高清封面 - 直接传纯数字 ID ==========
     async function fetchHighResArtwork(songId) {
       const url = `http://m.kuwo.cn/newh5/singles/songinfoandlrc?musicId=${songId}&httpStatus=1`;
       try {
@@ -450,11 +481,11 @@
     function renderLyrics() {
       if (!lyricsContainer) return;
       if (!lyrics || lyrics.length === 0) {
-        lyricsContainer.innerHTML = '<div class="text-center text-slate-600 py-8 text-xs">暂无歌词</div>';
+        lyricsContainer.innerHTML = '<div class="text-center text-slate-600 py-4 text-xs">暂无歌词</div>';
         return;
       }
       lyricsContainer.innerHTML = lyrics.map((line, idx) => `
-        <div id="lyric-line-${idx}" data-time="${line.time}" class="lyric-line py-1 px-1.5 text-center text-xs md:text-sm text-slate-500 font-medium transition-all duration-200 cursor-pointer hover:text-white rounded">
+        <div id="lyric-line-${idx}" data-time="${line.time}" class="lyric-line py-0.5 px-1.5 text-center text-xs md:text-sm text-slate-500 font-medium transition-all duration-200 cursor-pointer hover:text-white rounded">
           ${line.text}
         </div>
       `).join('');
@@ -474,23 +505,19 @@
 
       const QUALITY_MAP = { '128k': 'standard', '320k': 'exhigh', 'flac': 'lossless' };
       const apiLevel = QUALITY_MAP[qualitySelect.value] || 'standard';
-      // 播放 URL 用纯数字 ID
       const playUrl = `https://music.nxinxz.com/kw.php?id=${encodeURIComponent(song.id)}&level=${apiLevel}&type=mp3`;
       audioPlayer.src = playUrl;
       audioPlayer.play().catch(err => console.log('等待用户交互', err));
       updatePlayButtonState(true);
 
-      // 传纯数字 ID
       fetchHighResArtwork(song.id).then(url => { if(url) { song.artwork = url; playerCover.src = url; } });
 
-      // ====== 加载歌词 ======
       lastActiveIdx = -1;
       miniLyricText.innerText = "⏳ 正在加载歌词...";
-      lyricsContainer.innerHTML = '<div class="text-center text-slate-500 py-8 text-xs">正在加载歌词...</div>';
+      lyricsContainer.innerHTML = '<div class="text-center text-slate-500 py-4 text-xs">正在加载...</div>';
       downloadLrcBtn.classList.add('hidden');
       lyrics = [];
 
-      // 传纯数字 ID
       const rawLyrics = await fetchLyrics(song.id);
       console.log('🎵 歌词解析结果:', rawLyrics);
 
@@ -501,7 +528,7 @@
         miniLyricText.innerText = `🎵 ${song.title} - ${song.artist}`;
         console.log('✅ 歌词加载成功，共', lyrics.length, '行');
       } else {
-        lyricsContainer.innerHTML = '<div class="text-center text-slate-600 py-8 text-xs">暂无歌词</div>';
+        lyricsContainer.innerHTML = '<div class="text-center text-slate-600 py-4 text-xs">暂无歌词</div>';
         miniLyricText.innerText = "🔇 暂无歌词";
         console.warn('❌ 歌词加载失败');
       }
@@ -577,13 +604,13 @@
           if (lyricsContainer) {
             document.querySelectorAll('.lyric-line').forEach((el, idx) => {
               if (idx === activeIdx) {
-                el.className = 'lyric-line py-2 px-1.5 text-center text-sm md:text-base text-brand-400 font-extrabold transition-all duration-300 transform scale-105';
+                el.className = 'lyric-line py-1 px-1.5 text-center text-xs md:text-sm text-brand-400 font-extrabold transition-all duration-300 transform scale-105';
                 const containerHeight = lyricsContainer.clientHeight;
                 const lineOffsetTop = el.offsetTop;
                 const lineHeight = el.clientHeight;
                 lyricsContainer.scrollTo({ top: lineOffsetTop - containerHeight/2 + lineHeight/2, behavior: 'smooth' });
               } else {
-                el.className = 'lyric-line py-1 px-1.5 text-center text-xs md:text-sm text-slate-500 font-medium transition-all duration-200 cursor-pointer hover:text-white rounded';
+                el.className = 'lyric-line py-0.5 px-1.5 text-center text-xs md:text-sm text-slate-500 font-medium transition-all duration-200 cursor-pointer hover:text-white rounded';
               }
             });
           }
@@ -611,7 +638,9 @@
         else { audioPlayer.pause(); updatePlayButtonState(false); }
       }
     };
+    // 上一曲：向左
     prevBtn.onclick = () => { if(playlist.length) playSong(currentIndex > 0 ? currentIndex - 1 : playlist.length - 1); };
+    // 下一曲：向右
     nextBtn.onclick = () => { if(playlist.length) playSong(currentIndex < playlist.length - 1 ? currentIndex + 1 : 0); };
     progressContainer.onclick = e => {
       if (!audioPlayer.duration) return;
@@ -626,7 +655,7 @@
     downloadSongBtn.onclick = downloadCurrentSong;
     downloadLrcBtn.onclick = downloadLyrics;
 
-    settingsBtn.onclick = () => { proxyInput.value = localStorage.getItem('music_cors_proxy') || 'https://jsnzkpg4.pages.dev/'; settingsModal.classList.remove('hidden'); };
+    settingsBtn.onclick = () => { proxyInput.value = localStorage.getItem('music_cors_proxy') || 'https://seep.eu.org/'; settingsModal.classList.remove('hidden'); };
     closeSettingsBtn.onclick = () => settingsModal.classList.add('hidden');
     saveProxyBtn.onclick = () => {
       const v = proxyInput.value.trim();
